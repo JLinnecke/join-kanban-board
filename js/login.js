@@ -4,20 +4,22 @@
  * - Sets up event listeners for form submission and password visibility toggle.
  */
 document.addEventListener("DOMContentLoaded", function () {
-  if (document.getElementById('login-form')) {
-    const form = document.getElementById('login-form');
-    const rememberMeCheckbox = document.querySelector("#login-form input[type='checkbox']");
-    const emailInput = document.getElementById('emailInput');
-    const passwordInput = document.getElementById('passwordInput');
-    const errorMessage = document.getElementById('error-message');
+  if (document.getElementById("login-form")) {
+    const form = document.getElementById("login-form");
+    const rememberMeCheckbox = document.querySelector(
+      "#login-form input[type='checkbox']",
+    );
+    const emailInput = document.getElementById("emailInput");
+    const passwordInput = document.getElementById("passwordInput");
+    const errorMessage = document.getElementById("error-message");
 
-    if (localStorage.getItem('rememberMe') === 'true') {
-      emailInput.value = localStorage.getItem('email');
-      passwordInput.value = localStorage.getItem('password');
+    if (localStorage.getItem("rememberMe") === "true") {
+      emailInput.value = localStorage.getItem("email");
+      passwordInput.value = localStorage.getItem("password");
       rememberMeCheckbox.checked = true;
     }
 
-    form.addEventListener('submit', function (event) {
+    form.addEventListener("submit", function (event) {
       event.preventDefault();
       login();
     });
@@ -25,7 +27,6 @@ document.addEventListener("DOMContentLoaded", function () {
     setupPasswordToggle(passwordInput);
   }
 });
-
 
 /**
  * Initializes password toggle functionality for an input field.
@@ -55,7 +56,9 @@ function setupPasswordToggle(passwordInputField) {
    * Updates the background image of the password input field.
    */
   function updateBackgroundImage() {
-    const image = isPasswordVisible ? "visibility_on.png" : "visibility_off_password.png";
+    const image = isPasswordVisible
+      ? "visibility_on.png"
+      : "visibility_off_password.png";
     passwordInputField.style.backgroundImage = `url('../assets/img/${image}')`;
   }
 
@@ -95,7 +98,8 @@ function setupPasswordToggle(passwordInputField) {
    */
   function handleBlur() {
     if (!isPasswordVisible) {
-      passwordInputField.style.backgroundImage = "url('../assets/img/lock-password-input.png')";
+      passwordInputField.style.backgroundImage =
+        "url('../assets/img/lock-password-input.png')";
       resetClickCount();
     }
   }
@@ -130,18 +134,18 @@ async function findUserByEmailAndPassword(userData, email, password) {
  */
 function handleLoginSuccess(user, rememberMeCheckbox, email, password) {
   if (rememberMeCheckbox.checked) {
-    localStorage.setItem('email', email);
-    localStorage.setItem('password', password);
-    localStorage.setItem('rememberMe', 'true');
+    localStorage.setItem("email", email);
+    localStorage.setItem("password", password);
+    localStorage.setItem("rememberMe", "true");
   } else {
-    localStorage.removeItem('email');
-    localStorage.removeItem('password');
-    localStorage.setItem('rememberMe', 'false');
+    localStorage.removeItem("email");
+    localStorage.removeItem("password");
+    localStorage.setItem("rememberMe", "false");
   }
-  localStorage.setItem('userName', user.name);
-  localStorage.setItem('userFirstLetters', user.firstLetters);
-  localStorage.setItem('loggedInUser', user.name);
-  localStorage.setItem('showGreetings', 'true');
+  localStorage.setItem("userName", user.name);
+  localStorage.setItem("userFirstLetters", user.firstLetters);
+  localStorage.setItem("loggedInUser", user.name);
+  localStorage.setItem("showGreetings", "true");
   window.location.href = "summary.html";
 }
 
@@ -150,17 +154,19 @@ function handleLoginSuccess(user, rememberMeCheckbox, email, password) {
  * @param {HTMLElement} errorMessageElement - The error message element.
  */
 function displayError(errorMessageElement) {
-  errorMessageElement.style.display = 'block';
+  errorMessageElement.style.display = "block";
 }
 
 /**
  * Handles the login process.
  */
 async function login() {
-  let email = document.getElementById('emailInput').value;
-  let password = document.getElementById('passwordInput').value;
-  const rememberMeCheckbox = document.querySelector("#login-form input[type='checkbox']");
-  const errorMessage = document.getElementById('error-message');
+  let email = document.getElementById("emailInput").value;
+  let password = document.getElementById("passwordInput").value;
+  const rememberMeCheckbox = document.querySelector(
+    "#login-form input[type='checkbox']",
+  );
+  const errorMessage = document.getElementById("error-message");
 
   try {
     let userData = await getData("/userData");
@@ -179,22 +185,15 @@ async function login() {
 /**
  * Handles guest login.
  */
-async function guestLogin() {
+function guestLogin() {
+  const guestUser = {
+    name: "Guest",
+    firstLetters: "G",
+  };
+
   const guestEmail = "guest@example.de";
-  const guestPassword = "Test12..";
 
-  try {
-    let userData = await getData("/userData");
-    let guestUser = await findUserByEmailAndPassword(userData, guestEmail, guestPassword);
-
-    if (guestUser) {
-      handleGuestLoginSuccess(guestUser, guestEmail);
-    } else {
-      console.error("Guest account not found.");
-    }
-  } catch (error) {
-    console.error("Error fetching data from Firebase:", error);
-  }
+  handleGuestLoginSuccess(guestUser, guestEmail);
 }
 
 /**
@@ -203,11 +202,11 @@ async function guestLogin() {
  * @param {string} guestEmail - The guest email.
  */
 function handleGuestLoginSuccess(guestUser, guestEmail) {
-  localStorage.setItem('email', guestEmail);
-  localStorage.setItem('userName', guestUser.name);
-  localStorage.setItem('userFirstLetters', guestUser.firstLetters);
-  localStorage.setItem('guestLogin', 'true');
-  localStorage.setItem('showGreetings', 'true');
+  localStorage.setItem("email", guestEmail);
+  localStorage.setItem("userName", guestUser.name);
+  localStorage.setItem("userFirstLetters", guestUser.firstLetters);
+  localStorage.setItem("guestLogin", "true");
+  localStorage.setItem("showGreetings", "true");
   window.location.href = "summary.html";
 }
 
@@ -215,10 +214,10 @@ function handleGuestLoginSuccess(guestUser, guestEmail) {
  * Logs out the user.
  */
 function logout() {
-  localStorage.removeItem('loggedInUser');
-  localStorage.removeItem('userName');
-  localStorage.removeItem('userFirstLetters');
-  localStorage.removeItem('guestLogin');
+  localStorage.removeItem("loggedInUser");
+  localStorage.removeItem("userName");
+  localStorage.removeItem("userFirstLetters");
+  localStorage.removeItem("guestLogin");
   window.location.href = "index.html";
 }
 
@@ -226,11 +225,11 @@ function logout() {
  * Displays the user's initials on all pages.
  */
 function showLoginInitial() {
-  let userFirstLetters = localStorage.getItem('userFirstLetters');
-  let joinProfilElement = document.getElementById('joinProfil');
+  let userFirstLetters = localStorage.getItem("userFirstLetters");
+  let joinProfilElement = document.getElementById("joinProfil");
   if (joinProfilElement) {
     joinProfilElement.innerHTML = userFirstLetters;
   }
 }
 
-document.addEventListener('DOMContentLoaded', showLoginInitial);
+document.addEventListener("DOMContentLoaded", showLoginInitial);
