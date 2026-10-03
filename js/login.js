@@ -1,3 +1,9 @@
+import {
+  auth,
+  signInWithEmailAndPassword,
+  getDataAuth,
+} from "./firebase-auth.js";
+
 /**
  * Handles the DOMContentLoaded event to initialize the login form functionalities.
  * - Loads saved email and password if 'Remember me' was checked.
@@ -161,26 +167,32 @@ function displayError(errorMessageElement) {
  * Handles the login process.
  */
 async function login() {
-  let email = document.getElementById("emailInput").value;
-  let password = document.getElementById("passwordInput").value;
+  const email = document.getElementById("emailInput").value;
+  const password = document.getElementById("passwordInput").value;
   const rememberMeCheckbox = document.querySelector(
     "#login-form input[type='checkbox']",
   );
   const errorMessage = document.getElementById("error-message");
-
   try {
-    let userData = await getData("/userData");
-    let user = await findUserByEmailAndPassword(userData, email, password);
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password,
+    );
 
-    if (user) {
-      handleLoginSuccess(user, rememberMeCheckbox, email, password);
-    } else {
-      displayError(errorMessage);
-    }
+    const uid = userCredential.user.uid;
+    const token = await userCredential.user.getIdToken();
+
+    const user = await getDataAuth(`/userData/${uid}`, token);
+
+    handleLoginSuccess(user, rememberMeCheckbox, email, password);
   } catch (error) {
-    console.error("Error fetching data from Firebase:", error);
+    displayError(errorMessage);
+    console.error("Login failed:", error);
   }
 }
+
+window.login = login;
 
 /**
  * Handles guest login.
@@ -221,6 +233,8 @@ function logout() {
   window.location.href = "index.html";
 }
 
+window.logout = logout;
+
 /**
  * Displays the user's initials on all pages.
  */
@@ -231,5 +245,7 @@ function showLoginInitial() {
     joinProfilElement.innerHTML = userFirstLetters;
   }
 }
+
+window.showLoginInitial = showLoginInitial;
 
 document.addEventListener("DOMContentLoaded", showLoginInitial);
