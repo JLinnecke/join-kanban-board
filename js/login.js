@@ -208,6 +208,8 @@ function guestLogin() {
   handleGuestLoginSuccess(guestUser, guestEmail);
 }
 
+window.guestLogin = guestLogin;
+
 /**
  * Handles successful guest login.
  * @param {Object} guestUser - The guest user object.
